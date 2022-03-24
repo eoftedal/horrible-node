@@ -79,6 +79,20 @@ app.get("/product/:id", async (req, res) => {
     });
 });
 
+// inj
+app.get("/product", async (req, res) => {
+    const { title } = req.query;
+    const query = `SELECT * FROM Product WHERE title LIKE '${title}'`;
+    console.log(query);
+    pool.query(query, (err, result, fields) => {
+        if (err) {
+            res.status(500);
+            return res.json(err);
+        }
+        return res.json(result);
+    });
+});
+
 // s s r f
 app.get("/image/*", async (req, res) => {
     const u = req.path.replace(/^\/image/, "");
