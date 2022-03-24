@@ -34,8 +34,13 @@ pool.getConnection((err, c) => {
         title varchar(255) not null
     )`, (err, results, fields) => {
         if (err) console.warn(err);
-        c.query("INSERT INTO Product(title) VALUES ('banana phone')");
-        c.release();
+        c.query("INSERT IGNORE INTO Product(id, title) VALUES (1, 'banana phone')", (err, results, fields) => {
+            if (err) console.warn(err);
+            c.query("INSERT IGNORE INTO Product(id, title) VALUES (2, 'banana mobile');", (err, results, fields) => {
+                c.release();
+            });
+        });
+        
     })
 })
 
@@ -52,7 +57,7 @@ Cat.find({name: "fish"}).then((success) => {
 
 // nosql inj
 app.get("/cat", async (req, res) => {
-    const search = req.query.search;
+    const { search } = req.query;
     const cat = await Cat.findOne({ name: search });
     if (!cat) {
         res.status(404)
@@ -64,7 +69,7 @@ app.get("/cat", async (req, res) => {
 
 // inj
 app.get("/product/:id", async (req, res) => {
-    const id = req.params.id;
+    const { id } = req.params;
     pool.query("SELECT * FROM Product WHERE id=" + id, (err, result, fields) => {
         if (err) {
             res.status(500);
