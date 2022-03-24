@@ -53,9 +53,13 @@ Cat.find({name: "fish"}).then((success) => {
 // nosql inj
 app.get("/cat", async (req, res) => {
     const search = req.query.search;
-    console.log(req.query);
-    const cat = await Cat.find({ name: search });
-    res.json(cat);
+    const cat = await Cat.findOne({ name: search });
+    if (!cat) {
+        res.status(404)
+        return res.end("Could not find a cat with name: " + search);
+    }
+    
+    return res.json(cat);
 });
 
 // inj
