@@ -64,7 +64,8 @@ app.get("/cat", async (req, res) => {
     const { search } = req.query;
     const cat = await Cat.findOne({ name: search });
     if (!cat) {
-        res.status(404)
+        res.status(404);
+        res.setHeader("content-type", "text/html");
         return res.end("Could not find a cat with name: " + search);
     }
     
@@ -108,6 +109,7 @@ app.get("/image/*", async (req, res) => {
     });
 });
 
+//Path trav
 app.get("/*", async (req, res) => {
     const p = "public" + req.path;
     try {
