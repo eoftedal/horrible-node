@@ -66,6 +66,7 @@ app.get("/cat", async (req, res) => {
     if (!cat) {
         res.status(404);
         res.setHeader("content-type", "text/html");
+        //crøss søte scrøptøng
         return res.end("Could not find a cat with name: " + search);
     }
     
