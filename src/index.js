@@ -11,9 +11,13 @@
 const Express = require("express");
 const mysql = require("mysql");
 const https = require("https");
+const fsP = require("fs").promises;
+const fs = require("fs");
+const constants = require("fs").constants;
 
 const app = new Express();
 const mongoose = require('mongoose');
+
 mongoose.connect('mongodb://127.0.0.1:27017/cats', (err, success) => {
     if (err) return console.warn("ERROR", err);
 });
@@ -95,8 +99,8 @@ app.get("/product", async (req, res) => {
 
 // s s r f
 app.get("/image/*", async (req, res) => {
-    const u = req.path.replace(/^\/image/, "");
-    https.get("https:/" + u, (ires) => {
+    const u = req.path.replace(/^\/image\//, "");
+    https.get("https://" + u, (ires) => {
         Object.entries(ires.headers).forEach(([k,v]) => {
             res.setHeader(k, v);
         })
@@ -104,6 +108,22 @@ app.get("/image/*", async (req, res) => {
     });
 });
 
+app.get("/*", async (req, res) => {
+    const p = "public" + req.path;
+    try {
+        await fsP.access(p, constants.R_OK)
+        fs.readFile(p, (err, data) => {
+            if (err) {
+                res.status = 404
+                return res.end("Not found");
+            }
+            return res.end(data);
+        });
+    } catch {
+        res.status = 404
+        return res.end("Not found");
+    }
+});
 
 
 app.listen(8080, () => {
